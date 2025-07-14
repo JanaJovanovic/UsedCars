@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cars</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+    <style>
+        .car-card {
+            max-width: 18rem;
+            margin-bottom: 1rem;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+        }
+        .car-card .card-img-top {
+            height: 200px; /* Set a fixed height for the car image */
+            object-fit: cover; /* Ensure the image covers the entire container */
+        }
+        .navbar {
+            background-color: #212529;
+        }
+
+        .navbar-brand {
+            color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-link {
+            color: #f8f9fa;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #adb5bd;
+        }
+
+        .navbar-nav .active {
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #343a40;
+            font-weight: bold;
+        }
+
+        label {
+            color: #343a40;
+        }
+
+        .form-control {
+            border-color: #343a40;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0069d9;
+        }
+        body {
+            background-color: #f7f7f7;
+        }
+
+
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/home">Used Cars</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/car">Cars</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact">Contact</a>
+                </li>
+                <li class="nav-item dropdown" id="entryDropdown">
+                    <!-- Entry dropdown will be replaced dynamically -->
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form id="searchForm" method="get">
+                <div class="row text-center">
+                    <h1>Search</h1>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="model">Model:</label>
+                            <input type="text" class="form-control" id="model" name="model" th:value="${model}" >
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="startYear">Start Year:</label>
+                            <input type="number" class="form-control" id="startYear" name="startYear" th:value="${startYear}" min="0" onkeyup="if(value<0) value=0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="endYear">End Year:</label>
+                            <input type="number" class="form-control" id="endYear" name="endYear" th:value="${endYear}" min="0" onkeyup="if(value<0) value=0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="mileage">Mileage:</label>
+                            <input type="number" class="form-control" id="mileage" name="mileage" th:value="${mileage}" min="0" onkeyup="if(value<0) value=0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="startPrice">Start Price:</label>
+                            <input type="number" class="form-control" id="startPrice" name="startPrice" th:value="${startPrice}" min="0" onkeyup="if(value<0) value=0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="endPrice">End Price:</label>
+                            <input type="number" class="form-control" id="endPrice" name="endPrice" th:value="${endPrice}" min="0" onkeyup="if(value<0) value=0;">
+                        </div>
+                    </div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="driveType">Drive Type:</label>
+                            <select class="form-select" id="driveType" name="driveType">
+                                <option value="">None</option>
+                                <option value="Front-Wheel Drive (FWD)">Front-Wheel Drive (FWD)</option>
+                                <option value="Rear-Wheel Drive (RWD)">Rear-Wheel Drive (RWD)</option>
+                                <option value="All-Wheel Drive (AWD)">All-Wheel Drive (AWD)</option>
+                                <option value="Four-Wheel Drive (4WD)">Four-Wheel Drive (4WD)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <label for="gearBoxType">Gearbox Type:</label>
+                            <select class="form-select" id="gearBoxType" name="gearBoxType">
+                                <option value="">None</option>
+                                <option value="Manual">Manual Transmission</option>
+                                <option value="Automatic">Automatic Transmission</option>
+                                <option value="CVT">Continuously Variable Transmission (CVT)</option>
+                                <option value="DCT">Dual-Clutch Transmission (DCT)</option>
+                                <option value="AMT">Automated Manual Transmission (AMT)</option>
+                                <option value="DSG">Direct-Shift Gearbox (DSG)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row text-center my-2 justify-content-center">
+                            <div class="form-group ms-2 ps-4">
+                                <button type="button" class="btn btn-dark" onclick="searchCars(event)">Search</button>
+                            </div>
+                    </div>
+
+                        <div class="col-md-10"></div>
+                        <div class="col-md-2 form-group mx-0">
+                            <label for="pageSize">Page Size:</label>
+                            <select class="form-control" id="pageSize" name="pageSize" th:value="${pageSize}" onchange="changePageSize(event)">
+                                <option value="50" th:selected="${pageSize == 50}">50</option>
+                                <option value="25" th:selected="${pageSize == 25}">25</option>
+                                <option value="10" th:selected="${pageSize == 10}">10</option>
+                            </select>
+                        </div>
+
+                    <div class="row text-center">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8 form-group">
+                            <label for="lastSearches">Last Searches:</label>
+                            <select class="form-control" id="lastSearches" name="lastSearches"></select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row my-2"></div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <!-- Iterate over the list of CarShortDto objects and display their properties -->
+        <div th:each="car : ${carsPage.content}" class="col-md-4">
+            <div class="card car-card  mx-auto">
+                <img th:src="${'data:image/png;base64,' + car.picture}" alt="Car Picture" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title"><b>Model:</b> <span th:text="${car.model}"></span></h5>
+                    <p class="card-text"><b>Year:</b> <span th:text="${car.year}"></span></p>
+                    <p class="card-text"><b>Price:</b> <span th:text="${car.price}"></span></p>
+                    <div class="text-center">
+                        <a th:href="@{/car/{id}(id=${car.id})}" class="btn btn-dark">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination links -->
+    <div class="row">
+        <nav aria-label="Car Pagination">
+            <ul class="pagination justify-content-center">
+                <!-- Previous Page Button -->
+                <li th:class="${carsPage.first} ? 'page-item disabled' : 'page-item'">
+                    <button th:if="${!carsPage.first}" th:onclick="'handlePageClick(event, ' + ${carsPage.number - 1} + ')'" class="page-link" tabindex="-1" aria-disabled="true">Previous</button>
+                    <span th:unless="${!carsPage.first}" class="page-link">Previous</span>
+                </li>
+
+                <!-- Page Buttons -->
+                <li th:if="${carsPage.totalPages > 0}"
+                    th:class="${page == carsPage.number + 1} ? 'page-item active' : 'page-item'"
+                    th:each="page : ${#numbers.sequence(1, carsPage.totalPages)}">
+                    <button th:onclick="'handlePageClick(event, ' + ${page - 1} + ')'" class="page-link" th:text="${page}"></button>
+                </li>
+
+
+                <!-- Next Page Button -->
+                <li th:class="${carsPage.last} ? 'page-item disabled' : 'page-item'">
+                    <button th:if="${!carsPage.last}" class="page-link" th:onclick="'handlePageClick(event, ' + ${carsPage.number + 1} + ')'" >Next</button>
+                    <span th:unless="${!carsPage.last}" class="page-link">Next</span>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Page Size Dropdown -->
+<!--    <div class="row justify-content-center mt-3">-->
+<!--        <div class="col-md-4 text-center">-->
+<!--            <div class="form-group">-->
+<!--                <label for="pageSize">Page Size:</label>-->
+<!--                <select class="form-control" id="pageSize" name="pageSize" th:value="${pageSize}" onchange="changePageSize(event)">-->
+<!--                    <option value="50" th:selected="${pageSize == 50}">50</option>-->
+<!--                    <option value="25" th:selected="${pageSize == 25}">25</option>-->
+<!--                    <option value="10" th:selected="${pageSize == 10}">10</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="row my-2"></div>
+</div>
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include Bootstrap JS (Optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(document).ready(function() {
+    var accessToken = localStorage.getItem('accessToken');
+    var entryDropdown = $('#entryDropdown');
+    var lastSearchesDropdown = $('#lastSearches');
+    if (accessToken) {
+<!--      console.log("User is authenticated");-->
+      entryDropdown.html('<a class="nav-link" href="#" onclick="logout()">Logout</a>');
+        // Create a new option element for the default value
+      $.ajax({
+    type: "GET",
+    url: "/savedSearch", // Replace with the appropriate endpoint URL
+    headers: {
+        "Authorization": "Bearer " + accessToken
+    },
+    success: function(response) {
+        // Clear the dropdown list
+        lastSearchesDropdown.empty();
+
+        // Add the default "None" option
+        var defaultOption = $('<option>').text('None').val('');
+        lastSearchesDropdown.append(defaultOption);
+
+        // Populate the dropdown list with the modified last searches
+        for (var i = 0; i < response.length; i++) {
+            var modifiedText = response[i]
+                .replace(/\+/g, ' ')
+                .replace(/&/g, ', ')
+                .replace(/=/g, ':');
+
+            var option = $('<option>').text(modifiedText).val(response[i]);
+            lastSearchesDropdown.append(option);
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+    }
+});
+    } else {
+<!--      console.log("User is NOT authenticated");-->
+      entryDropdown.html('<a class="nav-link dropdown-toggle" href="#" id="entryDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Entry</a>' +
+                         '<div class="dropdown-menu dropdown-menu-end" aria-labelledby="entryDropdown">' +
+                         '  <a class="dropdown-item" href="/login">Login</a>' +
+                         '  <a class="dropdown-item" href="/register">Register</a>' +
+                         '</div>');
+      lastSearchesDropdown.parent().parent().hide();
+    }
+
+    $('#lastSearches').on('change', function() {
+        var selectedOption = $(this).val();
+<!--        console.log("Selected option:", selectedOption);-->
+
+        if (selectedOption !== '') {
+            window.location.href = "/car?" + selectedOption;
+        }
+    });
+  });
+
+  function logout() {
+    // Remove tokens from localStorage
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+
+    // Redirect to the logout URL
+    window.location.href = '/logout';
+  }
+
+  function searchCars(event) {
+    var model = $('#model').val();
+    var startYear = $('#startYear').val();
+    var endYear = $('#endYear').val();
+    var mileage = $('#mileage').val();
+    var startPrice = $('#startPrice').val();
+    var endPrice = $('#endPrice').val();
+    var driveType = $('#driveType').val();
+    var gearBoxType = $('#gearBoxType').val();
+    var pageSize = $('#pageSize').val(); // Get the selected pageSize value
+
+    // Create an object to hold the search parameters
+    var params = {
+        model: model,
+        startYear: startYear,
+        endYear: endYear,
+        mileage: mileage,
+        startPrice: startPrice,
+        endPrice: endPrice,
+        driveType: driveType,
+        gearBoxType: gearBoxType,
+        pageSize: pageSize // Add the pageSize parameter
+    };
+
+    // Remove empty parameters from the object
+    Object.keys(params).forEach(key => {
+        if (params[key] === "" || params[key] === null) {
+            delete params[key];
+        }
+    });
+
+    // Store the search parameters in localStorage
+    localStorage.setItem('params', $.param(params));
+
+    var accessToken = localStorage.getItem('accessToken');
+
+    if (accessToken) {
+        var str = $.param(params);
+
+        $.ajax({
+            type: "POST",
+            url: "/savedSearch",
+            headers: {
+                "Authorization": "Bearer " + accessToken
+            },
+            data: str,
+            success: function(response) {
+                // Handle the successful response
+                var searchUrl = "/car?" + $.param(params);
+                // Redirect to the search URL
+                window.location.href = searchUrl;
+            },
+            error: function(xhr, status, error) {
+                // Handle the error response
+            }
+        });
+    } else {
+        // Handle the case when accessToken is not available
+        var searchUrl = "/car?" + $.param(params);
+        window.location.href = searchUrl;
+<!--        console.log("Access token is missing. Unable to perform the AJAX POST request.");-->
+    }
+}
+function getParamsFromLocalStorage() {
+    return localStorage.getItem('params');
+}
+function handlePageClick(event, page) {
+    event.preventDefault(); // Prevent the default link behavior
+<!--    console.log("Page clicked:", page);-->
+    var params = getParamsFromLocalStorage();
+    // Perform any custom logic or redirection here
+    // For example, you can use window.location.href to redirect the page
+    window.location.href = "/car?pageNumber=" + page + "&" + params; // Replace with your desired URL
+}
+
+function isAuthenticated() {
+    var accessToken = localStorage.getItem('accessToken');
+    if (accessToken && accessToken.trim() !== "" && accessToken !== 'undefined') {
+      $('#authenticatedDiv').show();
+      $('#notAuthenticatedDiv').hide();
+    } else {
+      $('#authenticatedDiv').hide();
+      $('#notAuthenticatedDiv').show();
+    }
+  }
+// Function to refresh the access token using the refresh token
+  function refreshToken() {
+    var refreshToken = localStorage.getItem('refreshToken');
+<!--    console.log("Refreshing token");-->
+<!--    console.log(refreshToken);-->
+    $.ajax({
+      type: "POST",
+      url: "/auth/refresh-token",
+      headers: {
+        "Authorization": "Bearer " + refreshToken
+      },
+      success: function(response) {
+        // Handle the successful response
+        console.log(response);
+        var accessToken = response.access_token;
+
+        // Store the new access token
+        localStorage.setItem('accessToken', accessToken);
+
+        // Perform any other actions after token refresh
+      },
+      error: function(xhr, status, error) {
+        // Handle the error response
+        console.error(xhr.responseText);
+      }
+    });
+  }
+
+  function proactivelyRefreshToken() {
+    refreshToken();
+    // Schedule the next token refresh
+    var refreshTokenInterval = setInterval(refreshToken, 60000); // Refresh token every 1 minute (adjust as needed)
+
+    // Stop the refresh interval when the window/tab is closed
+    window.addEventListener("beforeunload", function() {
+      clearInterval(refreshTokenInterval);
+    });
+  }
+
+  // Start the proactive token refresh
+  proactivelyRefreshToken();
+
+  // Wait for the document to be fully loaded
+  $(document).ready(function() {
+    isAuthenticated();
+  });
+</script>
+</body>
+</html>

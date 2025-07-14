@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+  <!-- Include jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Custom CSS -->
+  <style>
+    .navbar {
+      background-color: #212529;
+    }
+
+    .navbar-brand {
+      color: #f8f9fa;
+      font-weight: bold;
+    }
+
+    .navbar-nav .nav-link {
+      color: #f8f9fa;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #adb5bd;
+    }
+
+    .navbar-nav .active {
+      font-weight: bold;
+    }
+
+    h1 {
+      color: #343a40;
+      font-weight: bold;
+    }
+
+    p {
+      color: #343a40;
+    }
+
+    .hero-section {
+      background-image: url("https://example.com/path/to/your-image.jpg");
+      background-size: cover;
+      background-position: center;
+      height: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .hero-section h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .hero-section p {
+      font-size: 24px;
+      margin-bottom: 40px;
+    }
+
+    body {
+      background-color: #f7f7f7;
+    }
+
+    .contact-form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 5px;
+    }
+
+    .form-control {
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      background-color: #343a40;
+      color: #ffffff;
+    }
+
+    .btn:hover {
+      background-color: #212529;
+    }
+
+    .contact-info {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .contact-info p {
+      margin-bottom: 5px;
+    }
+
+    .contact-info a {
+      color: #343a40;
+      margin-right: 10px;
+    }
+
+    .contact-info a:hover {
+      color: #212529;
+    }
+
+    .logo {
+      width: 30px;
+      height: 30px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/home">Used Cars</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/car">Cars</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/contact">Contact</a>
+        </li>
+        <li class="nav-item dropdown" id="entryDropdown">
+          <!-- Entry dropdown will be replaced dynamically -->
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-section">
+  <div class="container">
+    <h1 class="display-4">Contact Us</h1>
+    <p class="lead">Get in touch with us for any inquiries or feedback.</p>
+  </div>
+</section>
+
+<!-- <div class="contact-info">
+  <p>
+    <img class="logo" src="https://example.com/path/to/mail-logo.png" alt="Mail Logo">
+    Email: <a href="mailto:info@example.com">info@example.com</a>
+  </p>
+  <p>
+    <img class="logo" src="https://example.com/path/to/facebook-logo.png" alt="Facebook Logo">
+    Facebook: <a href="https://www.facebook.com/example">Example Facebook Page</a>
+  </p>
+  <p>
+    <img class="logo" src="https://example.com/path/to/facebook-logo.png" alt="Instagram Logo">
+    Instagram: <a href="https://www.instagram.com/example">Example Instagram Page</a>
+  </p>
+  <p>Phone: +1 123-456-7890</p>
+  <p>Address: 123 Example Street, City, Country</p>
+</div> -->
+
+<!-- Include Bootstrap JS (Optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(document).ready(function() {
+    var accessToken = localStorage.getItem('accessToken');
+    var entryDropdown = $('#entryDropdown');
+
+    if (accessToken) {
+      // User is authenticated
+      entryDropdown.html('<a class="nav-link" href="#" onclick="logout()">Logout</a>');
+    } else {
+      // User is not authenticated
+      entryDropdown.html('<a class="nav-link dropdown-toggle" href="#" id="entryDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Entry</a>' +
+                         '<div class="dropdown-menu dropdown-menu-end" aria-labelledby="entryDropdown">' +
+                         '  <a class="dropdown-item" href="/login">Login</a>' +
+                         '  <a class="dropdown-item" href="/register">Register</a>' +
+                         '</div>');
+    }
+  });
+
+  function logout() {
+    // Remove tokens from localStorage
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+
+    // Redirect to the logout URL
+    window.location.href = '/logout';
+  }
+
+function isAuthenticated() {
+    var accessToken = localStorage.getItem('accessToken');
+    if (accessToken && accessToken.trim() !== "" && accessToken !== 'undefined') {
+      $('#authenticatedDiv').show();
+      $('#notAuthenticatedDiv').hide();
+    } else {
+      $('#authenticatedDiv').hide();
+      $('#notAuthenticatedDiv').show();
+    }
+  }
+// Function to refresh the access token using the refresh token
+  function refreshToken() {
+    var refreshToken = localStorage.getItem('refreshToken');
+<!--    console.log("Refreshing token");-->
+<!--    console.log(refreshToken);-->
+    $.ajax({
+      type: "POST",
+      url: "/auth/refresh-token",
+      headers: {
+        "Authorization": "Bearer " + refreshToken
+      },
+      success: function(response) {
+        // Handle the successful response
+        console.log(response);
+        var accessToken = response.access_token;
+
+        // Store the new access token
+        localStorage.setItem('accessToken', accessToken);
+
+        // Perform any other actions after token refresh
+      },
+      error: function(xhr, status, error) {
+        // Handle the error response
+        console.error(xhr.responseText);
+      }
+    });
+  }
+
+  function proactivelyRefreshToken() {
+    refreshToken();
+    // Schedule the next token refresh
+    var refreshTokenInterval = setInterval(refreshToken, 60000); // Refresh token every 1 minute (adjust as needed)
+
+    // Stop the refresh interval when the window/tab is closed
+    window.addEventListener("beforeunload", function() {
+      clearInterval(refreshTokenInterval);
+    });
+  }
+
+  // Start the proactive token refresh
+  proactivelyRefreshToken();
+
+  // Wait for the document to be fully loaded
+  $(document).ready(function() {
+    isAuthenticated();
+  });
+</script>
+</body>
+</html>

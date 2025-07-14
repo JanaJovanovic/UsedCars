@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+  <!-- Include Toastr CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+  <!-- Include jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Include Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Include Toastr JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <!-- Custom CSS -->
+  <style>
+    .navbar {
+      background-color: #212529;
+    }
+
+    .navbar-brand {
+      color: #f8f9fa;
+      font-weight: bold;
+    }
+
+    .navbar-nav .nav-link {
+      color: #f8f9fa;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #adb5bd;
+    }
+
+    .navbar-nav .active {
+      font-weight: bold;
+    }
+
+    h1 {
+      color: #343a40;
+      font-weight: bold;
+    }
+
+    label {
+      color: #343a40;
+    }
+
+    .form-control {
+      border-color: #343a40;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0069d9;
+      border-color: #0069d9;
+    }
+
+    body {
+      background-color: #f7f7f7;
+    }
+
+    .input-container {
+      max-width: 350px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/home">Used Cars</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/car">Cars</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contact">Contact</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="entryDropdown" role="button" data-bs-toggle="dropdown"
+             aria-haspopup="true" aria-expanded="false">Entry</a>
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="entryDropdown">
+            <a class="dropdown-item" href="/login">Login</a>
+            <a class="dropdown-item" href="/register">Register</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="text-center">
+    <h1 class="mt-4">Register</h1>
+  </div>
+  <form id="registerForm">
+    <div class="input-container">
+      <div class="mb-3">
+        <label for="firstname" class="form-label">First Name:</label>
+        <input type="text" class="form-control" id="firstname" name="firstname" required>
+      </div>
+      <div class="mb-3">
+        <label for="lastname" class="form-label">Last Name:</label>
+        <input type="text" class="form-control" id="lastname" name="lastname" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+    </div>
+    <div class="text-center">
+      <button type="button" class="btn btn-dark" onclick="register()">Register</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function register() {
+    var registerData = {
+      firstname: $("#firstname").val(),
+      lastname: $("#lastname").val(),
+      email: $("#email").val(),
+      password: $("#password").val()
+    };
+
+    $.ajax({
+      type: "POST",
+      url: "/auth/register",
+      contentType: "application/json",
+      data: JSON.stringify(registerData),
+      success: function(response) {
+        // Handle the successful response
+        var accessToken = response.access_token;
+        var refreshToken = response.refresh_token;
+
+        // Store the tokens in local storage or cookies
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
+        // Redirect to another page or perform any other actions
+        window.location.href = "/home"; // Replace "/dashboard" with your desired page
+      },
+      error: function(xhr, status, error) {
+        // Handle the error response
+        console.error(xhr.responseText);
+
+        // Display a notification using Toastr
+        toastr.error('Registration failed. Please check your details.');
+      }
+    });
+  }
+</script>
+</body>
+</html>
